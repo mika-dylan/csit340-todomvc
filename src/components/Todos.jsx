@@ -30,15 +30,21 @@ function Todos() {
   function handleClearCompleted() {
     setTodos(todos.filter((todo) => !todo.completed))
   }
+
+  function handleAllToggle() {
+    const allCompleted = todos.every((todo) => todo.completed);
+    setTodos(todos.map((todo) => ({ ...todo, completed: !allCompleted })))
+  }
  
 
   const itemsLeft = todos.filter((todo) => !todo.completed).length
+
   const hasCompletedTodos = todos.some((todo) => todo.completed)
  
  
 
   return (
-    <section className="mx-auto max-w-[550px]">
+    <section className="mx-auto max-w-137.5">
      <h1 className="text-center text-[80px] font-extralight text-[#b83f45]">
        todos
      </h1>
@@ -48,7 +54,7 @@ function Todos() {
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="h-[65px] w-full py-4 pr-4 pl-[60px] text-2xl shadow-[inset_0_-2px_1px_rgba(0,0,0,0.03)] outline-none placeholder:text-black/40 placeholder:italic focus:shadow-[0_0_2px_2px_#cf7d7d]"
+            className="h-16.25 w-full py-4 pr-4 pl-15 text-2xl shadow-[inset_0_-2px_1px_rgba(0,0,0,0.03)] outline-none placeholder:text-black/40 placeholder:italic focus:shadow-[0_0_2px_2px_#cf7d7d]"
             placeholder="What needs to be done?"
           />
         </form>
@@ -56,10 +62,10 @@ function Todos() {
       {todos.length > 0 && (
         <>
         <main className="relative border-t border-[#e6e6e6]">
-          <input id="toggle-all" type="checkbox" className="peer sr-only" />
+          <input id="toggle-all" type="checkbox" className="peer sr-only" onChange={handleAllToggle} checked={todos.every((todo) => todo.completed)} />
           <label
             htmlFor="toggle-all"
-            className="absolute -top-[66px] left-0 flex h-[65px] w-[60px] cursor-pointer items-center justify-center text-[22px] text-[#949494] peer-checked:text-[#484848]"
+            className="absolute -top-16.5 left-0 flex h-[65px] w-15 cursor-pointer items-center justify-center text-[22px] text-[#949494] peer-checked:text-[#484848]"
           >
             <span className="rotate-90">❯</span>
           </label>
