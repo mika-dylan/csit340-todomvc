@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 function Todos() {
-  const [text, setText] = useState('')
-  const [todos, setTodos] = useState([])
-  
+    const [text, setText] = useState('')
+    const [todos, setTodos] = useState([])
+    const [filter, setFilter] = useState('all')
+ 
   function handleSubmit(e) {
     e.preventDefault()
     const trimmed = text.trim()
@@ -14,7 +15,7 @@ function Todos() {
     setTodos([...todos, newTodo])
     setText('')
   }
-
+ 
   function handleToggle(id) {
     setTodos(
       todos.map((todo) =>
@@ -22,7 +23,7 @@ function Todos() {
       )
     )
   }
-
+ 
   function handleDelete(id) {
     setTodos(todos.filter((todo) => todo.id !== id))
   }
@@ -31,47 +32,58 @@ function Todos() {
     setTodos(todos.filter((todo) => !todo.completed))
   }
 
-  function handleAllToggle() {
-    const allCompleted = todos.every((todo) => todo.completed);
+  function handleToggleAll() {
     setTodos(todos.map((todo) => ({ ...todo, completed: !allCompleted })))
   }
- 
 
   const itemsLeft = todos.filter((todo) => !todo.completed).length
-
+  const visibleTodos = todos.filter((todo) => {
+    if (filter === 'active') {
+      return !todo.completed
+    }
+    if (filter === 'completed') {
+      return todo.completed
+    }
+    return true
+  })
+  const allCompleted = itemsLeft === 0
   const hasCompletedTodos = todos.some((todo) => todo.completed)
  
- 
-
   return (
-    <section className="mx-auto max-w-137.5">
-     <h1 className="text-center text-[80px] font-extralight text-[#b83f45]">
-       todos
-     </h1>
-
-     <div className="relative bg-white shadow-[0_2px_4px_0_rgba(0,0,0,0.2),0_25px_50px_0_rgba(0,0,0,0.1)]">
-        <form onSubmit={handleSubmit}>
+    <section className="mx-auto max-w-[550px]">
+    <h1 className="text-center text-[80px] font-extralight text-[#b83f45]">
+    todos
+    </h1>
+     
+    <div className="relative bg-white shadow-[0_2px_4px_0_rgba(0,0,0,0.2),0_25px_50px_0_rgba(0,0,0,0.1)]">
+    <form onSubmit={handleSubmit}>
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="h-16.25 w-full py-4 pr-4 pl-15 text-2xl shadow-[inset_0_-2px_1px_rgba(0,0,0,0.03)] outline-none placeholder:text-black/40 placeholder:italic focus:shadow-[0_0_2px_2px_#cf7d7d]"
+            className="h-[65px] w-full py-4 pr-4 pl-[60px] text-2xl shadow-[inset_0_-2px_1px_rgba(0,0,0,0.03)] outline-none placeholder:text-black/40 placeholder:italic focus:shadow-[0_0_2px_2px_#cf7d7d]"
             placeholder="What needs to be done?"
           />
-        </form>
-
-      {todos.length > 0 && (
+    </form>
+    {todos.length > 0 && (
         <>
         <main className="relative border-t border-[#e6e6e6]">
-          <input id="toggle-all" type="checkbox" className="peer sr-only" onChange={handleAllToggle} checked={todos.every((todo) => todo.completed)} />
+          <input
+            id="toggle-all"
+            type="checkbox"
+            checked={allCompleted}
+            onChange={handleToggleAll}
+            className="peer sr-only"
+            />
+
           <label
             htmlFor="toggle-all"
-            className="absolute -top-16.5 left-0 flex h-[65px] w-15 cursor-pointer items-center justify-center text-[22px] text-[#949494] peer-checked:text-[#484848]"
+           className="absolute -top-[66px] left-0 flex h-[65px] w-[60px] cursor-pointer items-center justify-center text-[22px] text-[#949494] peer-checked:text-[#484848]"
           >
             <span className="rotate-90">❯</span>
           </label>
-
-        <ul>
-            {todos.map((todo) => (
+           
+          <ul>
+            {visibleTodos.map((todo) => (
               <li
                 key={todo.id}
                 className="group relative flex items-center border-b border-[#ededed] text-2xl"
@@ -82,8 +94,7 @@ function Todos() {
                 onChange={() => handleToggle(todo.id)}
                 className="ml-[15px] size-[30px] shrink-0 cursor-pointer accent-[#59a193]"
               />
-
-              <span
+                <span
                   className={
                     todo.completed
                       ? 'flex-1 py-[15px] pr-[60px] pl-[15px] break-all text-[#949494] line-through'
@@ -96,34 +107,42 @@ function Todos() {
                 type="button"
                 onClick={() => handleDelete(todo.id)}
                 className="absolute right-[10px] hidden size-10 cursor-pointer text-[30px] text-[#949494] group-hover:block hover:text-[#c18585]"
-              >
+                >
                 ×
               </button>
             </li>
             ))}
-
-        </ul>
-        </main>
-
+          </ul>
+        </main> 
         <footer className="grid h-10 grid-cols-3 items-center border-t border-[#e6e6e6] px-[15px] text-[15px]">
-          <span>
-            <strong className="font-light">{itemsLeft}</strong>{' '}
-              {itemsLeft === 1 ? 'item' : 'items'} left
-          </span>
-
+        <span>
+        <strong className="font-light">{itemsLeft}</strong>{' '}
+        {itemsLeft === 1 ? 'item' : 'items'} left
+        </span>
           <ul className="flex justify-center gap-1">
+<li>
+  <button
+    type="button"
+    onClick={() => setFilter('all')}
+    className={
+      filter === 'all'
+        ? 'cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]'
+        : 'cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10'
+    }
+  >
+    All
+  </button>
+</li>
+
             <li>
               <button
                 type="button"
-                className="cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]"
-              >
-                All
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10"
+                onClick={() => setFilter('active')}
+                className={
+                  filter === 'active'
+                    ? 'cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]'
+                    : 'cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10'
+                }
               >
                 Active
               </button>
@@ -131,28 +150,28 @@ function Todos() {
             <li>
               <button
                 type="button"
-                className="cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10"
+                onClick={() => setFilter('completed')}
+                className={
+                  filter === 'completed'
+                    ? 'cursor-pointer rounded-[3px] border border-[#b83f45]/20 px-[7px] py-[3px]'
+                    : 'cursor-pointer rounded-[3px] border border-transparent px-[7px] py-[3px] hover:border-[#b83f45]/10'
+                }
               >
                 Completed
               </button>
             </li>
           </ul>
-
-      {hasCompletedTodos && (
-          <button
-              type="button"
-              onClick={handleClearCompleted}
-              className="cursor-pointer justify-self-end hover:underline"
-          >
+          {hasCompletedTodos && (
+            <button type="button" onClick={handleClearCompleted} className="cursor-pointer justify-self-end hover:underline">
               Clear completed
-          </button>
-      )}
+            </button>
+          )}
         </footer>
         </>
-      )}
-     </div>
+    )}
+    </div>
     </section>
   )
 }
-
-export default Todos
+ 
+export default Todos;
